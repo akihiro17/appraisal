@@ -60,7 +60,12 @@ module Appraisal
         install_command(job_size)
       ].flatten.join(" ")
 
-      Command.new(command).run
+      if Bundler.settings[:path]
+        env = { 'BUNDLE_APP_CONFIG' => ::File.join(Bundler.root, '.bundle') }
+        Command.new(command, env: env).run
+      else
+        Command.new(command).run
+      end
     end
 
     def update(gems = [])
@@ -94,6 +99,10 @@ module Appraisal
 
     def check_command
       gemfile_option = "--gemfile='#{gemfile_path}'"
+      if Bundler.settings[:path]
+        gem_path = ::File.join(Bundler.root, Bundler.settings[:path])
+        gemfile_option << " --path #{gem_path}"
+      end
       ['bundle', 'check', gemfile_option]
     end
 

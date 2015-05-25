@@ -20,6 +20,7 @@ module Appraisal
 
       with_clean_env do
         env.each_pair do |key, value|
+          p "#{key}: #{value}"
           ENV[key] = value
         end
 
